@@ -54,7 +54,17 @@
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
+
+
         </LinearLayout>
+        <Button
+            android:id="@+id/btn_add_cart"
+            android:text="add to cart"
+            android:layout_gravity="center_horizontal"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

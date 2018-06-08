@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardElevation="16dp"
+    app:cardCornerRadius="8dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_name"
+                android:hint="Name"
+                android:textSize="18sp"
+                android:inputType="text"
+                app:met_floatingLabel="highlight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_address"
+                android:hint="Address"
+                android:textSize="18sp"
+                android:inputType="text"
+                app:met_floatingLabel="highlight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_birthdate"
+                android:hint="yyyy-MM-dd"
+                android:textSize="20sp"
+                android:inputType="text"
+                android:digits="1234567890-"
+                app:met_floatingLabel="highlight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorPrimaryDark"
+            android:text="Register" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

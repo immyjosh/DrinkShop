@@ -6,6 +6,7 @@ public class User {
     private String name;
     private String birthdate;
     private String err_msg;
+    private String avatarurl;
 
     public User() {
     }
@@ -48,5 +49,13 @@ public class User {
 
     public void setErr_msg(String err_msg) {
         this.err_msg = err_msg;
+    }
+
+    public String getAvatarurl() {
+        return avatarurl;
+    }
+
+    public void setAvatarurl(String avatarurl) {
+        this.avatarurl = avatarurl;
     }
 }

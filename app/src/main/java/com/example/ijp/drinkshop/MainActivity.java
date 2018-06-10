@@ -1,10 +1,13 @@
 package com.example.ijp.drinkshop;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.PatternMatcher;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,14 +46,36 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE = 1000;
+    private static final int REQUEST_PERMISSION = 1001;
     Button btn_continue;
 
     IDrinkShopAPI mService;
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode)
+        {
+            case REQUEST_PERMISSION:
+            {
+                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                    Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this,new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            },REQUEST_PERMISSION);
 
         mService= Common.getAPI();
 
@@ -180,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                                                                 alertDialog.dismiss();
 
                                                                 Common.currentUser=response.body();
-                                                                
+
                                                                 startActivity(new Intent(MainActivity.this,HomeActivity.class));
                                                                 finish();  // Closes MainActivity
                                                             }
@@ -308,5 +333,26 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    // Exit App wen back button pressed
+    boolean isBackButtonClicked=false;
+
+    @Override
+    public void onBackPressed()
+    {
+
+        if (isBackButtonClicked) {
+            super.onBackPressed();
+            return;
+        }
+        this.isBackButtonClicked=true;
+        Toast.makeText(this, "Please Click Again To Exit", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        isBackButtonClicked=false;
+        super.onResume();
     }
 }

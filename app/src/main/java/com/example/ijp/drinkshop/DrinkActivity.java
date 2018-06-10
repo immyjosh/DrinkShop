@@ -6,6 +6,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ijp.drinkshop.Adapter.DrinkAdapter;
 import com.example.ijp.drinkshop.Model.Drink;
@@ -50,19 +51,40 @@ public class DrinkActivity extends AppCompatActivity {
 
     private void loadListDrink(String menuId) {
         compositeDisposable.add(mService.getDrink(menuId)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<List<Drink>>() {
-            @Override
-            public void accept(List<Drink> drinks) throws Exception {
-                displayDrinkList(drinks);
-            }
-        }));
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Drink>>() {
+                    @Override
+                    public void accept(List<Drink> drinks) throws Exception {
+                        displayDrinkList(drinks);
+                    }
+                }));
 
     }
 
     private void displayDrinkList(List<Drink> drinks) {
         DrinkAdapter adapter=new DrinkAdapter(this,drinks);
         lst_drink.setAdapter(adapter);
+    }
+
+    // Exit App wen back button pressed
+    boolean isBackButtonClicked=false;
+
+    @Override
+    public void onBackPressed()
+    {
+
+        if (isBackButtonClicked) {
+            super.onBackPressed();
+            return;
+        }
+        this.isBackButtonClicked=true;
+        Toast.makeText(this, "Please Click Again To Exit", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        isBackButtonClicked=false;
     }
 }

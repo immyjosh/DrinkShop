@@ -3,6 +3,7 @@
     package="com.example.ijp.drinkshop">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -33,7 +34,9 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme" />
-        <activity android:name=".DrinkActivity"></activity>
+        <activity android:name=".DrinkActivity" />
+        <activity android:name=".FavoriteListActivity" />
+        <activity android:name=".CartActivity"></activity>
     </application>
 
 </manifest>

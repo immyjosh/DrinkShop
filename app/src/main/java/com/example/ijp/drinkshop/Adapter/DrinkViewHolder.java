@@ -16,7 +16,7 @@ public class DrinkViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     IitemClickListner iitemClickListner;
 
-    Button addToCart;
+    ImageView btnAddtoCart,btnFavourites;
 
     public void setIitemClickListner(IitemClickListner iitemClickListner) {
         this.iitemClickListner = iitemClickListner;
@@ -29,7 +29,8 @@ public class DrinkViewHolder extends RecyclerView.ViewHolder implements View.OnC
         txt_drink_name=itemView.findViewById(R.id.txt_drink_name);
         txt_price=itemView.findViewById(R.id.txt_price);
 
-        addToCart=itemView.findViewById(R.id.btn_add_cart);
+        btnAddtoCart=itemView.findViewById(R.id.btn_add_cart);
+        btnFavourites=itemView.findViewById(R.id.btn_favorite);
 
         itemView.setOnClickListener(this);
     }

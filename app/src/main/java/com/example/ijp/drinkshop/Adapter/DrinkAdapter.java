@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
+import com.example.ijp.drinkshop.Database.ModelDB.Cart;
+import com.example.ijp.drinkshop.Database.ModelDB.Favorites;
 import com.example.ijp.drinkshop.Interface.IitemClickListner;
 import com.example.ijp.drinkshop.Model.Drink;
 import com.example.ijp.drinkshop.R;
 import com.example.ijp.drinkshop.Utils.Common;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -44,12 +48,12 @@ public class DrinkAdapter extends RecyclerView.Adapter<DrinkViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DrinkViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final DrinkViewHolder holder, final int position) {
 
         holder.txt_price.setText(new StringBuilder("$").append(drinkList.get(position).Price).toString());
         holder.txt_drink_name.setText(drinkList.get(position).Name);
 
-        holder.addToCart.setOnClickListener(new View.OnClickListener() {
+        holder.btnAddtoCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showAddtocartDialogue(position);
@@ -66,7 +70,44 @@ public class DrinkAdapter extends RecyclerView.Adapter<DrinkViewHolder> {
                 Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Favorite System
+        if(Common.favoriteRepository.isFavorite(Integer.parseInt(drinkList.get(position).ID))==1)
+            holder.btnFavourites.setImageResource(R.drawable.ic_favorite_white_24dp);
+        else
+            holder.btnFavourites.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+
+        holder.btnFavourites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Common.favoriteRepository.isFavorite(Integer.parseInt(drinkList.get(position).ID))!=1) {
+                    addOrRemoveFavorite(drinkList.get(position),true);
+                    holder.btnFavourites.setImageResource(R.drawable.ic_favorite_white_24dp);
+                }
+                else {
+                    addOrRemoveFavorite(drinkList.get(position),false);
+                    holder.btnFavourites.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                }
+            }
+        });
+
     }
+
+    private void addOrRemoveFavorite(Drink drink, boolean isAdd) {
+        Favorites favorites=new Favorites();
+        favorites.id=drink.ID;
+        favorites.link=drink.Link;
+        favorites.name=drink.Name;
+        favorites.price=drink.Price;
+        favorites.menuId=drink.MenuId;
+
+        if(isAdd)
+            Common.favoriteRepository.insertFav(favorites);
+        else
+            Common.favoriteRepository.delete(favorites);
+
+    }
+
 
     private void showAddtocartDialogue(final int position) {
         AlertDialog.Builder builder=new AlertDialog.Builder(context);
@@ -221,7 +262,7 @@ public class DrinkAdapter extends RecyclerView.Adapter<DrinkViewHolder> {
                     return;
                 }
 
-                showConfirmDialog(position,txtCount.getNumber(),Common.sizeOfCup,Common.sugar,Common.ice);
+                showConfirmDialog(position,txtCount.getNumber());
                 dialog.dismiss();
 
             }
@@ -229,30 +270,30 @@ public class DrinkAdapter extends RecyclerView.Adapter<DrinkViewHolder> {
         builder.show();
     }
 
-    private void showConfirmDialog(int position, String number, int sizeOfCup, int sugar, int ice) {
+    private void showConfirmDialog(final int position, final String number) {
         AlertDialog.Builder builder=new AlertDialog.Builder(context);
         View itemView=LayoutInflater.from(context)
                 .inflate(R.layout.confirm_add_to_cart_layout,null);
 
         // View
         ImageView img_product_dialogue=itemView.findViewById(R.id.img_product);
-        TextView txt_Product_Dialogue= itemView.findViewById(R.id.txt_cart_product_name);
+        final TextView txt_Product_Dialogue= itemView.findViewById(R.id.txt_cart_product_name);
         TextView txtProductPrice=itemView.findViewById(R.id.txt_cart_product_price);
         TextView txtSugar=itemView.findViewById(R.id.txt_sugar);
         TextView txtIce=itemView.findViewById(R.id.txt_ice);
-        TextView txtToppingExtra=itemView.findViewById(R.id.txt_topping_extra);
+        final TextView txtToppingExtra=itemView.findViewById(R.id.txt_topping_extra);
 
         // Set Data
         Picasso.with(context).load(drinkList.get(position).Link).into(img_product_dialogue);
         txt_Product_Dialogue.setText(new StringBuilder(drinkList.get(position).Name).append(" x")
-        .append(number)
-        .append(Common.sizeOfCup == 0 ? " Size M":" Size L").toString());
+                .append(number)
+                .append(Common.sizeOfCup == 0 ? " Size M":" Size L").toString());
 
         txtIce.setText(new StringBuilder("Ice: ").append(Common.ice).append("%").toString());
         txtSugar.setText(new StringBuilder("Sugar: ").append(Common.sugar).append("%").toString());
 
         double price=(Double.parseDouble(drinkList.get(position).Price)* Double.parseDouble(number))
-        + Common.toppingPrice;
+                + Common.toppingPrice;
 
         if(Common.sizeOfCup==1) //SizeL
             price+=3.0;
@@ -265,12 +306,36 @@ public class DrinkAdapter extends RecyclerView.Adapter<DrinkViewHolder> {
 
         txtToppingExtra.setText(toppingFinalComment);
 
+        final double finalPrice = price;
         builder.setNegativeButton("CONFIRM", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //Add to Sqlite
 
                 dialog.dismiss();
+
+                try {
+                    //Add to Sqlite
+                    // Create New Cart Item
+                    Cart cartItem = new Cart();
+                    cartItem.name = txt_Product_Dialogue.getText().toString();
+                    cartItem.amount = Integer.parseInt(number);
+                    cartItem.ice = Common.ice;
+                    cartItem.sugar = Common.sugar;
+                    cartItem.price = finalPrice;
+                    cartItem.toppingExtras = txtToppingExtra.getText().toString();
+                    cartItem.link=drinkList.get(position).Link;
+
+                    // Add to DB
+                    Common.cartRepository.insertToCart(cartItem);
+
+                    Log.d("DEBUG", new Gson().toJson(cartItem));
+
+                    Toast.makeText(context, "Save Item To Cart Success", Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -23,3 +23,4 @@ public class CheckUserResponse {
         this.error_msg = error_msg;
     }
 }
+

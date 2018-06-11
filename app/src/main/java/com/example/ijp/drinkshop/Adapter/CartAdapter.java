@@ -40,7 +40,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CartViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final CartViewHolder holder, final int position) {
 
         Picasso.with(context)
                 .load(cartList.get(position).link)
@@ -48,10 +48,16 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         holder.txtAmount.setNumber(String.valueOf(cartList.get(position).amount));
         holder.txtPrice.setText(new StringBuilder("$").append(cartList.get(position).price));
-        holder.txtProductName.setText(cartList.get(position).name);
+        holder.txtProductName.setText(new StringBuilder(cartList.get(position).name)
+        .append(" x")
+        .append(cartList.get(position).amount)
+        .append(cartList.get(position).amount==0 ? " Size M":"Size L"));
         holder.txtSugarIce.setText(new StringBuilder("Sugar: ")
                 .append(cartList.get(position).sugar).append("%").append("\n")
                 .append("%").toString());
+
+        //Get Price of one cup with Options
+        final double priceOneCup=cartList.get(position).price/cartList.get(position).amount;
 
         //Autosave Item when user save amount
         holder.txtAmount.setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
@@ -59,8 +65,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
                 Cart cart=cartList.get(position);
                 cart.amount=newValue;
+                cart.price=Math.round(priceOneCup*newValue);
 
                 Common.cartRepository.updateCart();
+
+                holder.txtPrice.setText(new StringBuilder("$").append(cartList.get(position).price));
             }
         });
 

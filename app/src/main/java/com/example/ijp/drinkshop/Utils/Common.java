@@ -8,6 +8,7 @@ import com.example.ijp.drinkshop.Model.Drink;
 import com.example.ijp.drinkshop.Model.User;
 import com.example.ijp.drinkshop.Retrofit.IDrinkShopAPI;
 import com.example.ijp.drinkshop.Retrofit.RetrofitClient;
+import com.example.ijp.drinkshop.Retrofit.RetrofitScalarClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class Common {
 
     public static final String BASE_URL="http://10.0.2.2/drinkshop/";
+    public static final String API_TOKEN_URL="http://10.0.2.2/drinkshop/braintree/main.php";
 
     public static final String toppingMenuId="7";
 
@@ -39,5 +41,9 @@ public class Common {
 
     public static IDrinkShopAPI getAPI(){
         return RetrofitClient.getClient(BASE_URL).create(IDrinkShopAPI.class);
+    }
+
+    public static IDrinkShopAPI getScalarsAPI(){
+        return RetrofitScalarClient.getScalarsClient(BASE_URL).create(IDrinkShopAPI.class);
     }
 }

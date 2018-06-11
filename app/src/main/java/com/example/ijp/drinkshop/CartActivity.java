@@ -1,6 +1,7 @@
 package com.example.ijp.drinkshop;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -20,6 +21,10 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.braintreepayments.api.dropin.DropInActivity;
+import com.braintreepayments.api.dropin.DropInRequest;
+import com.braintreepayments.api.dropin.DropInResult;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.example.ijp.drinkshop.Adapter.CartAdapter;
 import com.example.ijp.drinkshop.Adapter.FavoriteAdapter;
 import com.example.ijp.drinkshop.Database.ModelDB.Cart;
@@ -29,10 +34,15 @@ import com.example.ijp.drinkshop.Utils.Common;
 import com.example.ijp.drinkshop.Utils.RecyclerItemTouchHelper;
 import com.example.ijp.drinkshop.Utils.RecyclerItemTouchHelperListner;
 import com.google.gson.Gson;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.TextHttpResponseHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import dmax.dialog.SpotsDialog;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -56,6 +66,11 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
 
     IDrinkShopAPI mService;
 
+    IDrinkShopAPI mServiceScalars;
+    // Global Strings
+    String token,amount,orderAddress,orderComment;
+    HashMap<String,String> params;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +79,7 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
         compositeDisposable=new CompositeDisposable();
 
         mService=Common.getAPI();
+        mServiceScalars=Common.getScalarsAPI();
 
         recyclerCart=findViewById(R.id.recycler_cart);
         recyclerCart.setLayoutManager(new LinearLayoutManager(this));
@@ -84,6 +100,33 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
 
         loadCartItems();
 
+        loadToken();
+
+    }
+
+    private void loadToken() {
+
+        final android.app.AlertDialog waitingDialog=new SpotsDialog(CartActivity.this);
+        waitingDialog.show();
+        waitingDialog.setMessage("Please Wait...");
+
+        AsyncHttpClient client=new AsyncHttpClient();
+        client.get(Common.API_TOKEN_URL, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                waitingDialog.dismiss();
+                btnPlaceOrder.setEnabled(false);
+
+                Toast.makeText(CartActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                waitingDialog.dismiss();
+                token=responseString;
+                btnPlaceOrder.setEnabled(true);
+            }
+        });
     }
 
     private void placeOrder() {
@@ -125,8 +168,9 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
         }).setPositiveButton("SUBMIT", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                final String orderComment=edtComment.getText().toString();
-                final String orderAddress;
+
+                orderComment=edtComment.getText().toString();
+
                 if(rdiUserAddress.isChecked())
                     orderAddress=Common.currentUser.getAddress();
                 else if(rdiOtherAddress.isChecked())
@@ -134,29 +178,95 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
                 else
                     orderAddress="";
 
-                // Submit Order
-                compositeDisposable.add(
-                        Common.cartRepository.getCartItems()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(new Consumer<List<Cart>>() {
-                            @Override
-                            public void accept(List<Cart> carts) throws Exception {
-                                if (!TextUtils.isEmpty(orderAddress))
-                                    sendOrderToServer(Common.cartRepository.sumPrice(),
-                                            carts,orderComment
-                                    ,orderAddress);
-                                else
-                                    Toast.makeText(CartActivity.this, "Order Address Cant Be Empty", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                );
+                //Payment
+                DropInRequest dropInRequest=new DropInRequest().clientToken(token);
+                startActivityForResult(dropInRequest.getIntent(CartActivity.this),7777);
+
+
             }
         });
         builder.show();
     }
 
-    private void sendOrderToServer(float sumPrice,List<Cart> carts, String orderComment, String orderAddress) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==7777)
+        {
+            if(resultCode==RESULT_OK)
+            {
+                DropInResult dropInResult=data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+                PaymentMethodNonce nonce=dropInResult.getPaymentMethodNonce();
+                String strNonce=nonce.getNonce();
+
+                if(Common.cartRepository.sumPrice()>0)
+                {
+                    amount=String.valueOf(Common.cartRepository.sumPrice());
+                    params=new HashMap<>();
+
+                    params.put("amount",amount);
+                    params.put("nonce",strNonce);
+
+                    sendPayment();
+                }
+                else {
+                    Toast.makeText(this, "Payment Amount is 0", Toast.LENGTH_SHORT).show();
+
+                }
+            }else if(resultCode==RESULT_CANCELED)
+                Toast.makeText(this, "Payment Cancelled", Toast.LENGTH_SHORT).show();
+            else
+            {
+                Exception error=(Exception)data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
+                Log.e("ERROR",error.getMessage());
+            }
+        }
+    }
+
+    private void sendPayment() {
+
+        mServiceScalars.payment(params.get("nonce"),params.get("amount"))
+                .enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.body().toString().contains("Successful"))
+                        {
+                            Toast.makeText(CartActivity.this, "Transaction Successful", Toast.LENGTH_SHORT).show();
+                            // Submit Order
+                            compositeDisposable.add(
+                                    Common.cartRepository.getCartItems()
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribeOn(Schedulers.io())
+                                            .subscribe(new Consumer<List<Cart>>() {
+                                                @Override
+                                                public void accept(List<Cart> carts) throws Exception {
+                                                    if (!TextUtils.isEmpty(orderAddress))
+                                                        sendOrderToServer(Common.cartRepository.sumPrice(),
+                                                                carts,orderComment
+                                                                ,orderAddress);
+                                                    else
+                                                        Toast.makeText(CartActivity.this, "Order Address Cant Be Empty", Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                            );
+
+                        }
+                        else
+                        {
+                            Toast.makeText(CartActivity.this, "Transaction Failed", Toast.LENGTH_SHORT).show();
+                        }
+                        Log.d("INFO",response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                        Log.d("INFO",t.getMessage());
+                    }
+                });
+
+    }
+
+    private void sendOrderToServer(float sumPrice, List<Cart> carts, String orderComment, String orderAddress) {
         if(carts.size()>0)
         {
             String orderDetail=new Gson().toJson(carts);

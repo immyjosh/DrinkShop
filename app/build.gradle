@@ -56,4 +56,12 @@ dependencies {
 
     //Material SearchBar
     implementation 'com.github.mancj:MaterialSearchBar:+'
+
+    //For Payment Plugins
+    implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
+    implementation 'com.braintreepayments.api:drop-in:3.3.0'
+    implementation 'com.loopj.android:android-async-http:1.4.9'
+
+
+
 }

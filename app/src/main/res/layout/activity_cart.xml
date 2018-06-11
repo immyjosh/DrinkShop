@@ -12,6 +12,7 @@
     <Button
         android:id="@+id/btn_place_order"
         android:text="Place Order"
+        android:enabled="false"
         android:background="@color/colorPrimaryDark"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"

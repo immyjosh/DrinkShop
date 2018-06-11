@@ -48,4 +48,15 @@ public interface IDrinkShopAPI {
     @POST("upload.php")
     Call<String> uploadFile(@Part MultipartBody.Part phone, @Part MultipartBody.Part file);
 
+    @GET("getalldrinks.php")
+    Observable<List<Drink>> getAllDrinks();
+
+    @FormUrlEncoded
+    @POST("submitorder.php")
+    Call<String> submitOrder(@Field("price") float orderPrice,
+                             @Field("orderDetail") String orderDetail,
+                             @Field("comment") String comment,
+                             @Field("address") String address,
+                             @Field("phone") String phone);
+
 }

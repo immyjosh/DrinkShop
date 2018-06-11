@@ -53,4 +53,7 @@ dependencies {
     // Notification Badge
     implementation 'com.nex3z:notification-badge:1.0.2'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+
+    //Material SearchBar
+    implementation 'com.github.mancj:MaterialSearchBar:+'
 }

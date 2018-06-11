@@ -39,6 +39,11 @@ public class CartRepository implements ICartDataSource{
     }
 
     @Override
+    public float sumPrice() {
+        return iCartDataSource.sumPrice();
+    }
+
+    @Override
     public void emptyCart() {
         iCartDataSource.emptyCart();
     }

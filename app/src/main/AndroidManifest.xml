@@ -36,7 +36,8 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".DrinkActivity" />
         <activity android:name=".FavoriteListActivity" />
-        <activity android:name=".CartActivity"></activity>
+        <activity android:name=".CartActivity" />
+        <activity android:name=".SearchActivity"></activity>
     </application>
 
 </manifest>

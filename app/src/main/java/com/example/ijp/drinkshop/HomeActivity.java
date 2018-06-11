@@ -353,6 +353,10 @@ public class HomeActivity extends AppCompatActivity
         if (id == R.id.cart_menu) {
             return true;
         }
+        else if (id == R.id.search_menu) {
+            startActivity(new Intent(HomeActivity.this,SearchActivity.class));
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -5,6 +5,11 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_favorite"
+            android:icon="@drawable/ic_favorite_border_white_24dp"
+            android:title="Favorites" />
+
+        <item
             android:id="@+id/nav_sign_out"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
             android:title="Log Out" />

@@ -55,19 +55,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/txt_sugar_ice"
-                android:text="Milk Tea"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:weightSum="7"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+
 
                 <TextView
                     android:id="@+id/txt_price"
@@ -78,17 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
-                    android:id="@+id/txt_amount"
-                    android:layout_weight="1"
-                    app:initialNumber="1"
-                    app:finalNumber="100"
-                    app:backGroundColor="@android:color/white"
-                    app:textSize="8sp"
-                    app:textColor="@color/colorPrimaryDark"
-                    android:layout_width="80dp"
-                    android:layout_height="30dp"></com.cepheuen.elegantnumberbutton.view.ElegantNumberButton>
-            </LinearLayout>
+
 
         </LinearLayout>
 

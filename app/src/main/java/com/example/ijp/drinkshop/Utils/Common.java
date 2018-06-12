@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Common {
-
-    public static final String BASE_URL="http://10.0.2.2/drinkshop/";
-    public static final String API_TOKEN_URL="http://10.0.2.2/drinkshop/braintree/main.php";
+//10.0.2.2 - Emulator localhost
+    public static final String BASE_URL="http://10.0.2.2/DrinkShop/";
+    public static final String API_TOKEN_URL="http://10.0.2.2/DrinkShop/braintree/main.php";
 
     public static final String toppingMenuId="7";
 

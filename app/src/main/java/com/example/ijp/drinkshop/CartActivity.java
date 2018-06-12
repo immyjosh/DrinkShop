@@ -130,62 +130,85 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
     }
 
     private void placeOrder() {
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        builder.setTitle("Submit Order");
 
-        View submitOrderLayout= LayoutInflater.from(this).inflate(R.layout.submit_order_layout,null);
+        if (Common.currentUser!=null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Submit Order");
 
-        final EditText edtComment=submitOrderLayout.findViewById(R.id.edt_comment);
-        final EditText edtOtherAddress=submitOrderLayout.findViewById(R.id.edt_other_address);
+            View submitOrderLayout = LayoutInflater.from(this).inflate(R.layout.submit_order_layout, null);
 
-        final RadioButton rdiUserAddress=submitOrderLayout.findViewById(R.id.rdi_user_address);
-        final RadioButton rdiOtherAddress=submitOrderLayout.findViewById(R.id.rdi_other_address);
+            final EditText edtComment = submitOrderLayout.findViewById(R.id.edt_comment);
+            final EditText edtOtherAddress = submitOrderLayout.findViewById(R.id.edt_other_address);
 
-        //Event
-        rdiUserAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                    edtOtherAddress.setEnabled(false);
-            }
-        });
+            final RadioButton rdiUserAddress = submitOrderLayout.findViewById(R.id.rdi_user_address);
+            final RadioButton rdiOtherAddress = submitOrderLayout.findViewById(R.id.rdi_other_address);
 
-        rdiOtherAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                    edtOtherAddress.setEnabled(true);
-            }
-        });
+            //Event
+            rdiUserAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked)
+                        edtOtherAddress.setEnabled(false);
+                }
+            });
 
-        builder.setView(submitOrderLayout);
+            rdiOtherAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked)
+                        edtOtherAddress.setEnabled(true);
+                }
+            });
 
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        }).setPositiveButton("SUBMIT", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+            builder.setView(submitOrderLayout);
 
-                orderComment=edtComment.getText().toString();
+            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).setPositiveButton("SUBMIT", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-                if(rdiUserAddress.isChecked())
-                    orderAddress=Common.currentUser.getAddress();
-                else if(rdiOtherAddress.isChecked())
-                    orderAddress=edtOtherAddress.getText().toString();
-                else
-                    orderAddress="";
+                    orderComment = edtComment.getText().toString();
 
-                //Payment
-                DropInRequest dropInRequest=new DropInRequest().clientToken(token);
-                startActivityForResult(dropInRequest.getIntent(CartActivity.this),7777);
+                    if (rdiUserAddress.isChecked())
+                        orderAddress = Common.currentUser.getAddress();
+                    else if (rdiOtherAddress.isChecked())
+                        orderAddress = edtOtherAddress.getText().toString();
+                    else
+                        orderAddress = "";
+
+                    //Payment
+                    DropInRequest dropInRequest = new DropInRequest().clientToken(token);
+                    startActivityForResult(dropInRequest.getIntent(CartActivity.this), 7777);
 
 
-            }
-        });
-        builder.show();
+                }
+            });
+            builder.show();
+        }else {
+
+            //Require Login
+
+            AlertDialog.Builder builder=new AlertDialog.Builder(CartActivity.this);
+            builder.setTitle("NOT LOGIN?");
+            builder.setMessage("Please Login or Register Account to submit order");
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    startActivity(new Intent(CartActivity.this,MainActivity.class));
+                    finish();
+                }
+            }).show();
+        }
     }
 
     @Override
@@ -279,6 +302,7 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
 
                             //Clear cart
                             Common.cartRepository.emptyCart();
+                            finish();
                         }
 
                         @Override

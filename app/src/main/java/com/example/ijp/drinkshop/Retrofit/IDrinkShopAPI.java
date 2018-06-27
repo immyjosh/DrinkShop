@@ -4,6 +4,7 @@ import com.example.ijp.drinkshop.Model.Banner;
 import com.example.ijp.drinkshop.Model.Category;
 import com.example.ijp.drinkshop.Model.CheckUserResponse;
 import com.example.ijp.drinkshop.Model.Drink;
+import com.example.ijp.drinkshop.Model.Order;
 import com.example.ijp.drinkshop.Model.User;
 
 import java.util.List;
@@ -63,5 +64,10 @@ public interface IDrinkShopAPI {
     @POST("braintree/checkout.php")
     Call<String> payment(@Field("nonce") String nonce,
                              @Field("amount") String amount);
+
+    @FormUrlEncoded
+    @POST("getorder.php")
+    Observable<List<Order>> getOrder(@Field("userPhone") String userPhone,
+                                    @Field("status") String status);
 
 }

@@ -8,6 +8,15 @@ public class User {
     private String err_msg;
     private String avatarurl;
 
+    public User(String phone, String address, String name, String birthdate, String err_msg, String avatarurl) {
+        this.phone = phone;
+        this.address = address;
+        this.name = name;
+        this.birthdate = birthdate;
+        this.err_msg = err_msg;
+        this.avatarurl = avatarurl;
+    }
+
     public User() {
     }
 

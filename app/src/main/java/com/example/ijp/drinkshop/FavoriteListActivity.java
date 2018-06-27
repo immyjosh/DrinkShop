@@ -76,6 +76,11 @@ public class FavoriteListActivity extends AppCompatActivity implements RecyclerI
             public void accept(List<Favorites> favorites) throws Exception {
                 displayFavoriteItem(favorites);
             }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+
+            }
         }));
     }
 

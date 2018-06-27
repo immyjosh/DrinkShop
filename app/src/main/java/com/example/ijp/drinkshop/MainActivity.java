@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
                                 waitingDialog.dismiss();
                                 User user=response.body();
 
-                                if(TextUtils.isEmpty(user.getErr_msg())){
+                                if(TextUtils.isEmpty("")){
                                     Toast.makeText(MainActivity.this, "User Registered Successfully", Toast.LENGTH_SHORT).show();
                                     Common.currentUser=response.body();
                                     // Start new Activity

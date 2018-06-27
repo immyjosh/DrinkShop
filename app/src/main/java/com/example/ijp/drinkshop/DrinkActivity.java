@@ -58,6 +58,11 @@ public class DrinkActivity extends AppCompatActivity {
                     public void accept(List<Drink> drinks) throws Exception {
                         displayDrinkList(drinks);
                     }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                    }
                 }));
 
     }
@@ -70,17 +75,17 @@ public class DrinkActivity extends AppCompatActivity {
     // Exit App wen back button pressed
     boolean isBackButtonClicked=false;
 
-    @Override
-    public void onBackPressed()
-    {
-
-        if (isBackButtonClicked) {
-            super.onBackPressed();
-            return;
-        }
-        this.isBackButtonClicked=true;
-        Toast.makeText(this, "Please Click Again To Exit", Toast.LENGTH_SHORT).show();
-    }
+//    @Override
+//    public void onBackPressed()
+//    {
+//
+//        if (isBackButtonClicked) {
+//            super.onBackPressed();
+//            return;
+//        }
+//        this.isBackButtonClicked=true;
+//        Toast.makeText(this, "Please Click Again To Exit", Toast.LENGTH_SHORT).show();
+//    }
 
     @Override
     protected void onPostResume() {

@@ -10,6 +10,11 @@
             android:title="Favorites" />
 
         <item
+            android:id="@+id/nav_show_orders"
+            android:icon="@drawable/ic_attach_money_black_24dp"
+            android:title="Your Orders" />
+
+        <item
             android:id="@+id/nav_sign_out"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
             android:title="Log Out" />

@@ -297,7 +297,12 @@ public class HomeActivity extends AppCompatActivity
                 .subscribe(new Consumer<List<Drink>>() {
                     @Override
                     public void accept(List<Drink> drinks) throws Exception {
-                        Common.toppingList=drinks;
+                        Common.toppingList = drinks;
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
                     }
                 }));
     }
@@ -310,6 +315,11 @@ public class HomeActivity extends AppCompatActivity
                     @Override
                     public void accept(List<Category> categories) throws Exception {
                         displayMenu(categories);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
                     }
                 }));
     }
@@ -327,6 +337,11 @@ public class HomeActivity extends AppCompatActivity
                     @Override
                     public void accept(List<Banner> banners) throws Exception {
                         displayImage(banners);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
                     }
                 }));
     }
@@ -467,6 +482,10 @@ public class HomeActivity extends AppCompatActivity
         {
             startActivity(new Intent(HomeActivity.this,FavoriteListActivity.class));
         }
+        else if(id==R.id.nav_show_orders)
+        {
+            startActivity(new Intent(HomeActivity.this,ShowOrderActivity.class));
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -478,6 +497,12 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
         updateCartCount();
         isBackButtonClicked=false;
+    }
+
+    @Override
+    protected void onPause() {
+
+        super.onPause();
     }
 
     @Override

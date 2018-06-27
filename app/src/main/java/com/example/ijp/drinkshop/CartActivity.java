@@ -264,10 +264,15 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
                                                 public void accept(List<Cart> carts) throws Exception {
                                                     if (!TextUtils.isEmpty(orderAddress))
                                                         sendOrderToServer(Common.cartRepository.sumPrice(),
-                                                                carts,orderComment
-                                                                ,orderAddress);
+                                                                carts, orderComment
+                                                                , orderAddress);
                                                     else
                                                         Toast.makeText(CartActivity.this, "Order Address Cant Be Empty", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }, new Consumer<Throwable>() {
+                                                @Override
+                                                public void accept(Throwable throwable) throws Exception {
+
                                                 }
                                             })
                             );
@@ -324,6 +329,11 @@ public class CartActivity extends AppCompatActivity implements RecyclerItemTouch
                             @Override
                             public void accept(List<Cart> carts) throws Exception {
                                 displayCartItems(carts);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
                             }
                         })
         );

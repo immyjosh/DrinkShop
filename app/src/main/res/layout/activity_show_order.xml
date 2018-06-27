@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/bg"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FavoriteListActivity">
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_orders"
+        android:layout_margin="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_alignParentBottom="true"
+        app:itemBackground="@color/colorPrimary"
+        app:itemTextColor="@android:color/black"
+        app:itemIconTint="@android:color/black"
+        android:layout_width="match_parent"
+        app:menu="@menu/show_order_bottom_menu"
+        android:layout_height="wrap_content"></android.support.design.widget.BottomNavigationView>
+
+</RelativeLayout>
